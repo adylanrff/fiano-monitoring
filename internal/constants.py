@@ -1,0 +1,3 @@
+PEKERJA_PAGE_TITLE = "Pekerja"
+TASKS_PAGE_TITLE = "Tasks"
+PROJECT_PAGE_TITLE = "Projects"

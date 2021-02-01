@@ -26,6 +26,7 @@ def insert_project(project: Project):
 
     project_row.pekerja = project.get_workers_collection()
     project_row.deliverables = project.get_deliverables_collection()
+    project_row.status = project.status
 
     return project.name
 

@@ -39,8 +39,9 @@ def insert_project():
             price = deliverable.get('price')
             quantity = deliverable.get('quantity')
             info = deliverable.get('info')
+            unit = deliverable.get('unit')
             
-            new_deliverable = ProjectDeliverable(project_name, section, item, subitem, info, quantity, price)
+            new_deliverable = ProjectDeliverable(project_name, section, item, subitem, info, quantity, price, unit)
             deliverables.append(new_deliverable)
         
         start_date = datetime.strptime(data.get('start_date'), "%Y-%m-%dT%H:%M:%S.%fZ")

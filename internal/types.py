@@ -13,7 +13,7 @@ class ProjectDeliverable:
         "Produksi",
         ""
     ]
-    def __init__(self, project: str, section: str, item:str, subitem:str, info:str, quantity:int, price:int):
+    def __init__(self, project: str, section: str, item:str, subitem:str, info:str, quantity:int, price:int, unit:str):
         name = '-'.join([project, section, item, subitem])
         self.uuid = project + "-" + str(hashlib.sha256(name.encode('utf-8')).hexdigest())[:5]
         self.section = section
@@ -25,6 +25,7 @@ class ProjectDeliverable:
         self.total_price = self.quantity * self.price
         self.status = "Persiapan"
         self.deliverables_map = {}
+        self.unit = unit
 
     @classmethod
     def build_from_json(cls, data):
@@ -45,6 +46,7 @@ class ProjectDeliverable:
             deliverable_row.jumlah = self.quantity
             deliverable_row.harga = self.price
             deliverable_row.status = self.status
+            deliverable_row.unit = self.unit
             deliverable = deliverable_row
 
         return deliverable
@@ -82,13 +84,15 @@ class Project:
         deliverables: list[ProjectDeliverable]=[], 
         workers: list[ProjectWorker]=[], 
         start_date:datetime=datetime.now(), 
-        end_date:datetime=datetime.now()):
+        end_date:datetime=datetime.now(),
+        project_status:str="RAB"):
         
         self.name = name
         self.start_date = start_date
         self.end_date = end_date
         self.deliverables = deliverables
         self.workers = workers
+        self.status = project_status
     
     def get_workers_collection(self):
         worker_names = []
@@ -117,6 +121,7 @@ class Project:
             queue.put((deliverable, deliverables, deliverables_collection, current_project.id, deliverables_blocks))
         
         queue.join()
+
         return deliverables_blocks
 
     @classmethod

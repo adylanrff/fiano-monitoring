@@ -21,6 +21,7 @@ ProjectJsonSchema = {
                             "subitem": { "type": "string"},
                             "quantity": { "type": "number"},
                             "price": { "type": "number"},
+                            "unit": { "type": "string"},
                             "info": { "type": "string"},
                         }
                     }

@@ -32,6 +32,15 @@ services:
   redis:
     image: redis
 
+  rq-worker:
+    restart: always
+    build: .
+    deploy: 
+      mode: replicated
+      replicas: 2
+
+    command: rqworker --with-scheduler --url redis://redis:6379
+
   fiano_monitoring:
     restart: always
     depends_on:

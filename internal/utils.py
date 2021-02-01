@@ -2,7 +2,7 @@ import config
 from uuid import uuid1
 from service.notion import notion_service
 from random import choice
-
+from threading import Thread
 
 def add_new_multi_select_value(collection, prop, value):
     colors = [
@@ -46,3 +46,21 @@ def add_new_multi_select_value(collection, prop, value):
         {"id": str(uuid1()), "value": value, "color": color}
     )
     collection.set("schema", collection_schema)
+
+
+class ProjectCreationWorker(Thread):
+
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+            # Get the work from the queue and expand the tuple
+            deliverable, deliverables, deliverables_collection, project_id, deliverables_blocks = self.queue.get()
+            try:
+                new_deliverable_block = deliverable.get_or_create_collection_from_project(deliverables, deliverables_collection, project_id)
+                deliverables_blocks.append(new_deliverable_block)
+            finally:
+                self.queue.task_done()
+

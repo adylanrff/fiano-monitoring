@@ -1,7 +1,9 @@
 import hashlib
 from datetime import datetime
+from queue import Queue
 from typing import Literal
 from service.notion import notion_service
+from internal.utils import ProjectCreationWorker
 
 # Types
 class ProjectDeliverable:
@@ -71,6 +73,8 @@ class ProjectWorker:
     def build_from_json(cls, data):
         pass
 
+
+
 class Project:
     def __init__(
         self, 
@@ -99,9 +103,21 @@ class Project:
         current_project = notion_service.get_projects().get(self.name)
         deliverables = notion_service.get_deliverables_by_project(current_project.id)
         deliverables_collection = notion_service.get_deliverables_block().collection
-        return list(
-            map(
-                lambda deliverable: deliverable.get_or_create_collection_from_project(deliverables, deliverables_collection, current_project.id), self.deliverables))
+
+        deliverables_blocks = []
+
+        queue = Queue()
+
+        for x in range(8):
+            worker = ProjectCreationWorker(queue)
+            worker.daemon = True
+            worker.start()
+
+        for deliverable in self.deliverables: 
+            queue.put((deliverable, deliverables, deliverables_collection, current_project.id, deliverables_blocks))
+        
+        queue.join()
+        return deliverables_blocks
 
     @classmethod
     def build_from_json(cls, data):

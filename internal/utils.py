@@ -59,8 +59,13 @@ class ProjectCreationWorker(Thread):
             # Get the work from the queue and expand the tuple
             deliverable, deliverables, deliverables_collection, project_id, deliverables_blocks = self.queue.get()
             try:
-                new_deliverable_block = deliverable.get_or_create_collection_from_project(deliverables, deliverables_collection, project_id)
-                deliverables_blocks.append(new_deliverable_block)
+                while True:
+                    try:
+                        new_deliverable_block = deliverable.get_or_create_collection_from_project(deliverables, deliverables_collection, project_id)
+                        deliverables_blocks.append(new_deliverable_block)
+                    except:
+                        continue
+                    else:
+                        break
             finally:
                 self.queue.task_done()
-

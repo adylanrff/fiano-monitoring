@@ -42,7 +42,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fiano_monitoring.rule=Host(`fiano-monitoring.adylanrff.com`)"
-      - "traefik.http.routers.fiano_monitoring.rule=Host(`fiano-monitoring.com`)"
       - "traefik.http.routers.fiano_monitoring.entrypoints=websecure"
       - "traefik.http.routers.fiano_monitoring.tls.certresolver=myresolver"
       - "traefik.http.routers.fiano_monitoring.tls=true"

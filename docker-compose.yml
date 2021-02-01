@@ -38,7 +38,7 @@ services:
       - reverse_proxy
       - redis
     build: .
-    command: gunicorn app:app
+    command: gunicorn -b 0.0.0.0:8000 app:app
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fiano_monitoring.rule=Host(`fiano-monitoring.adylanrff.com`)"

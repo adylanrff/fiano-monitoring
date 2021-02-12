@@ -7,7 +7,7 @@ from notion.collection import NotionDate
 class NotionService:
     def __init__(self, token):
         self.token: str = token
-        self.client: NotionClient = NotionClient(token_v2=token)
+        self.client: NotionClient = NotionClient(token_v2=token, enable_caching=True)
 
     def get_block(self, url):
         return self.client.get_block(url)
@@ -31,6 +31,12 @@ class NotionService:
             project_map[row.nama] = row
         return project_map
 
+    def get_project_by_title(self, title):
+        for row in self.get_project_block().collection.get_rows():
+            if row.nama == title:
+                return row
+        return None
+    
     def get_workers(self):
         worker_block = self.get_worker_block()
         worker_collection = worker_block.collection
@@ -63,7 +69,6 @@ class NotionService:
         for row in result: 
             deliverables_map[row.uuid] = row
         
-        print(deliverables_map)
         return deliverables_map
 
 

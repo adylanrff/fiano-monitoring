@@ -59,7 +59,10 @@ def insert_project():
 
 @app.route('/projects')
 def get_projects():
-    return fiano.get_projects()
+    return {
+        "data": fiano.get_projects()
+    }
+
 
 if __name__ == '__main__':
     app.run()

@@ -1,9 +1,11 @@
 import hashlib
+import json
 from datetime import datetime
 from queue import Queue
 from typing import Literal
 from service.notion import notion_service
-from internal.utils import ProjectCreationWorker
+from internal.utils import ProjectCreationWorker, ProjectDeliverableReaderWorker
+
 
 # Types
 class ProjectDeliverable:
@@ -24,17 +26,33 @@ class ProjectDeliverable:
         self.price = price
         self.total_price = self.quantity * self.price
         self.status = "Persiapan"
-        self.deliverables_map = {}
         self.unit = unit
 
     @classmethod
     def build_from_json(cls, data):
         pass
+
+    @classmethod
+    def build_from_collection(cls, row):
+        uuid = row.uuid
+        project = row.project[0].title
+        section = row.section
+        item = row.item
+        subitem = row.subitem
+        info = row.info
+        quantity = row.jumlah
+        price = row.harga
+        status = row.status
+        unit = row.unit
+
+        deliverable = cls(project, section, item, subitem, info, quantity, price, unit)
+        deliverable.uuid = uuid
+        deliverable.status = status
+        return deliverable
     
     def get_or_create_collection_from_project(self, deliverables, deliverables_collection, projectId):
         deliverables_collection = notion_service.get_deliverables_block().collection
         deliverable = deliverables.get(self.uuid)
-        print(deliverable)
         
         if deliverable is None:
             deliverable_row = deliverables_collection.add_row()
@@ -50,6 +68,7 @@ class ProjectDeliverable:
             deliverable = deliverable_row
 
         return deliverable
+
 
 class ProjectWorker:
     def __init__(self, name: str, type:Literal["HARIAN", "BORONGAN"] = "HARIAN"):
@@ -76,7 +95,6 @@ class ProjectWorker:
         pass
 
 
-
 class Project:
     def __init__(
         self, 
@@ -85,7 +103,9 @@ class Project:
         workers: list[ProjectWorker]=[], 
         start_date:datetime=datetime.now(), 
         end_date:datetime=datetime.now(),
-        project_status:str="RAB"):
+        project_status:str="RAB",
+        progress=0,
+        ):
         
         self.name = name
         self.start_date = start_date
@@ -93,6 +113,7 @@ class Project:
         self.deliverables = deliverables
         self.workers = workers
         self.status = project_status
+        self.progress = progress
     
     def get_workers_collection(self):
         worker_names = []
@@ -101,7 +122,6 @@ class Project:
             worker_names.append(cur_worker.nama)
 
         return worker_names
-
 
     def get_deliverables_collection(self):
         current_project = notion_service.get_projects().get(self.name)
@@ -124,6 +144,34 @@ class Project:
 
         return deliverables_blocks
 
+    def to_json(self):
+        return self.__dict__
+
     @classmethod
     def build_from_json(cls, data):
         pass
+
+    @classmethod 
+    def build_from_collection(cls, row):
+        name=row.nama
+        # generate deliverables
+        collection_deliverables = row.deliverables
+        deliverables = []
+
+        queue = Queue()
+        for x in range(8):
+            worker = ProjectDeliverableReaderWorker(queue)
+            worker.daemon = True
+            worker.start()
+
+        for deliverable in collection_deliverables:
+             queue.put((deliverables, deliverable))
+
+        queue.join()
+
+        workers = row.pekerja
+        start_date = row.timeline.start
+        end_date = row.timeline.end
+        project_status = row.status
+        
+        return cls(name, deliverables, workers, start_date, end_date, project_status)

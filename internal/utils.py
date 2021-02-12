@@ -69,3 +69,26 @@ class ProjectCreationWorker(Thread):
                         break
             finally:
                 self.queue.task_done()
+
+class ProjectDeliverableReaderWorker(Thread):
+
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+            # Get the work from the queue and expand the tuple
+            all_deliverables, deliverable = self.queue.get()
+            try:
+                while True:
+                    try:
+                        from internal.types import ProjectDeliverable
+                        new_deliverable = ProjectDeliverable.build_from_collection(deliverable).__dict__
+                        all_deliverables.append(new_deliverable)
+                    except:
+                        continue
+                    else:
+                        break
+            finally:
+                self.queue.task_done()

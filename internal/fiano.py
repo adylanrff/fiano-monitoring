@@ -31,21 +31,14 @@ def insert_project(project: Project):
     return project.name
 
 def get_projects():
-    workers = notion_service.get_workers()
-    block = notion_service.get_block(config.NOTION_ROOT_PAGE_URL)
-    
-    projects_db_block = None
-    pekerja_db_block = None
-    deliverables_db_block = None
-    
-    for block in block.children:
-        
-        if hasattr(block, "title"):
-            if block.title == constants.PEKERJA_PAGE_TITLE:
-                pekerja_db_block = block
-            elif block.title == constants.TASKS_PAGE_TITLE:
-                deliverables_db_block = block
-            elif block.title == constants.PROJECT_PAGE_TITLE:
-                projects_db_block = block
-        
-    return projects_db_block.title
+    project_map = notion_service.get_projects()
+    projects = []
+    for project in project_map:
+        row = project_map[project]
+        projects.append(Project.build_from_collection(row).to_json())
+    return projects
+
+def get_project_by_id(title):
+    project = notion_service.get_project_by_title(title)
+    return Project.build_from_collection(project).to_json()
+

@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS project_deliverable_tab (
     updated_at int
 );
 
-CREATE TABLE IF NOT EXISTS workers_tab (
+CREATE TABLE IF NOT EXISTS worker_tab (
     id SERIAL PRIMARY KEY,
     worker_name varchar(64),
     worker_type varchar(32),

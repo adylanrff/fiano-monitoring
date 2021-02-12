@@ -34,7 +34,7 @@ services:
 
   rq-worker:
     restart: always
-    build: .
+    build: ..
     deploy: 
       mode: replicated
       replicas: 2
@@ -46,7 +46,7 @@ services:
     depends_on:
       - reverse_proxy
       - redis
-    build: .
+    build: ..
     command: gunicorn -b 0.0.0.0:8000 app:app
     labels:
       - "traefik.enable=true"
@@ -55,4 +55,4 @@ services:
       - "traefik.http.routers.fiano_monitoring.tls.certresolver=myresolver"
       - "traefik.http.routers.fiano_monitoring.tls=true"
     env_file: 
-      - .env
+      - ../.env

@@ -1,0 +1,39 @@
+version: '3'
+services:
+  redis:
+    image: redis
+
+  rq-worker:
+    restart: always
+    build: ..
+    deploy: 
+      mode: replicated
+      replicas: 2
+
+    command: rqworker --with-scheduler --url redis://redis:6379
+  
+  postgres:
+    image: postgres:alpine
+    volumes:
+      - /lib/postgres/postgres-data:/var/lib/postgresql/data
+      - ../db:/docker-entrypoint-initdb.d/  
+    env_file: 
+      - ../.env
+    
+  fiano_monitoring:
+    restart: always
+    depends_on:
+      - redis
+    build: ..
+    ports: 
+      - "8000:8000"
+    command: gunicorn -b 0.0.0.0:8000 app:app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fiano_monitoring.rule=Host(`fiano-monitoring.adylanrff.com`)"
+      - "traefik.http.routers.fiano_monitoring.entrypoints=websecure"
+      - "traefik.http.routers.fiano_monitoring.tls.certresolver=myresolver"
+      - "traefik.http.routers.fiano_monitoring.tls=true"
+    env_file: 
+      - ../.env
+  

@@ -2,19 +2,12 @@ import hashlib
 import json
 from datetime import datetime
 from queue import Queue
-from typing import Literal
+from typing import Literal, List
 from service.notion import notion_service
 from internal.utils import ProjectCreationWorker, ProjectDeliverableReaderWorker
 
-
 # Types
 class ProjectDeliverable:
-    STATUS = [
-        "Persiapan",
-        "Sipil",
-        "Produksi",
-        ""
-    ]
     def __init__(self, project: str, section: str, item:str, subitem:str, info:str, quantity:int, price:int, unit:str):
         name = '-'.join([project, section, item, subitem])
         self.uuid = project + "-" + str(hashlib.sha256(name.encode('utf-8')).hexdigest())[:5]
@@ -25,7 +18,7 @@ class ProjectDeliverable:
         self.quantity = quantity
         self.price = price
         self.total_price = self.quantity * self.price
-        self.status = "Persiapan"
+        self.status = "Gambar Kerja"
         self.unit = unit
 
     @classmethod
@@ -99,8 +92,8 @@ class Project:
     def __init__(
         self, 
         name: str, 
-        deliverables: list[ProjectDeliverable]=[], 
-        workers: list[ProjectWorker]=[], 
+        deliverables: List[ProjectDeliverable]=[], 
+        workers: List[ProjectWorker]=[], 
         start_date:datetime=datetime.now(), 
         end_date:datetime=datetime.now(),
         project_status:str="RAB",

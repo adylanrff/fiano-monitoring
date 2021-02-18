@@ -8,7 +8,6 @@ def insert_project():
 
 @app.route('/projects')
 def get_projects():
-
     return {
         "data": fiano.get_projects()
     }

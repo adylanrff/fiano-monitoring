@@ -4,10 +4,10 @@ from model.project import ProjectDeliverableSchedule
 from model.project import ProjectDeliverableWorker
 from model.project import Worker
 from datetime import datetime
+from app_init import db
 
 
 def insert_to_db(project, deliverables, workers):
-    # insert to DB
     new_project, project_created = Project.get_or_create(
         project_name=project.name,
         defaults={'project_status': project.status,

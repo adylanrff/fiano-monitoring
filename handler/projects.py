@@ -20,11 +20,9 @@ def add_project_handler(request):
 
         # Get project name
         project_name = data.get('nama')
-
         # Get workers
         pekerja_names = data.get('pekerja')
         workers = [types.ProjectWorker(name) for name in pekerja_names]
-
         # get dates
         start_date = datetime.strptime(
             data.get('start_date'), "%Y-%m-%dT%H:%M:%S.%fZ")

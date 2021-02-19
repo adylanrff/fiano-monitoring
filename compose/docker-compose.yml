@@ -35,19 +35,31 @@ services:
   rq-worker:
     restart: always
     build: ..
-    deploy: 
-      mode: replicated
-      replicas: 2
+    depends_on: 
+      - redis
 
     command: rqworker --with-scheduler --url redis://redis:6379
-
+  
+  postgres:
+    image: postgres:alpine
+    volumes:
+      - /lib/postgres/postgres-data:/var/lib/postgresql/data
+      - ../db:/docker-entrypoint-initdb.d/  
+    env_file: 
+      - ../.env
+    
   fiano_monitoring:
     restart: always
     depends_on:
-      - reverse_proxy
+      - postgres
       - redis
     build: ..
-    command: gunicorn -b 0.0.0.0:8000 app:app
+    ports: 
+      - "8000:8000"
+      - "5000:5000"
+    command: python -m flask run -h 0.0.0.0
+    volumes: 
+      - ..:/src
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fiano_monitoring.rule=Host(`fiano-monitoring.adylanrff.com`)"

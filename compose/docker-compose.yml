@@ -64,11 +64,13 @@ services:
     env_file: 
       - ../.env
 
-  fiano_metabase:
+  grafana:
     restart: always
-    image: metabase/metabase
+    image: grafana/grafana
     depends_on:
       - postgres
+    volumes: 
+      - grafana-storage:/var/lib/grafana
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fiano_metabase.rule=Host(`metabase.fiano-monitoring.adylanrff.com`)"
@@ -77,3 +79,6 @@ services:
       - "traefik.http.routers.fiano_metabase.tls=true"
     env_file: 
       - ../.env
+volumes:
+  grafana-storage:
+    external: true

@@ -4,7 +4,7 @@ ProjectJsonSchema = {
         "project": {
             "type": "object",
             "properties": {
-                "nama": { "type": "string" },
+                "nama": {"type": "string"},
                 "pekerja": {
                     "type": "array",
                     "items": {
@@ -16,20 +16,36 @@ ProjectJsonSchema = {
                     "items": {
                         "type": "object",
                         "properties": {
-                            "section": { "type": "string"},
-                            "item": { "type": "string"},
-                            "subitem": { "type": "string"},
-                            "quantity": { "type": "number"},
-                            "price": { "type": "number"},
-                            "unit": { "type": "string"},
-                            "info": { "type": "string"},
+                            "section": {"type": "string"},
+                            "item": {"type": "string"},
+                            "subitem": {"type": "string"},
+                            "quantity": {"type": "number"},
+                            "price": {"type": "number"},
+                            "unit": {"type": "string"},
+                            "info": {"type": "string"},
+                            "workers": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            },
+                            "schedules": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "schedule_type": {"type": "string"},
+                                        "start_date": {"type": "string", "format": "date"},
+                                        "end_date": {"type": "string", "format": "date"},
+                                    }
+                                },
+                                "required": ["schedule_type", "start_date", "end_date"]
+                            }
                         }
                     }
                 },
-                "start_date": { "type": "string", "format": "date"},
-                "end_date": { "type": "string", "format": "date"}
+                "start_date": {"type": "string", "format": "date"},
+                "end_date": {"type": "string", "format": "date"}
             },
-            "required" : ["nama", "deliverables", "start_date", "end_date"]
+            "required": ["nama", "deliverables", "start_date", "end_date"]
         }
     }
 }

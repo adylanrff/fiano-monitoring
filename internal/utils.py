@@ -34,7 +34,7 @@ def add_new_multi_select_value(collection, prop, value):
     if prop_schema["type"] != "multi_select":
         print(f'"{prop}" is not a multi select property!')
         return 
-
+    
     dupe = next(
         (o for o in prop_schema["options"] if o["value"] == value), None
     )
@@ -63,7 +63,8 @@ class ProjectCreationWorker(Thread):
                     try:
                         new_deliverable_block = deliverable.get_or_create_collection_from_project(deliverables, deliverables_collection, project_id)
                         deliverables_blocks.append(new_deliverable_block)
-                    except:
+                    except Exception as e:
+                        print(e)
                         continue
                     else:
                         break

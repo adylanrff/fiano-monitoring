@@ -49,18 +49,20 @@ create table if not exists project_deliverable_worker_tab (
 	project_deliverable_id int references project_deliverable_tab(id) not null,
 	worker_id int references worker_tab(id) not null,
 	created_at date, 
-	updated_at date
+	updated_at date,
+
+	UNIQUE(project_deliverable_id, worker_id)
 );
 
 
 create table if not exists project_deliverable_schedule_tab (
 	id SERIAL primary key,
-	project_deliverable int references project_deliverable_tab(id) not NULL,
+	project_deliverable_id int references project_deliverable_tab(id) not NULL,
 	schedule_type varchar(32),
 	start_date date, 
 	end_date date,
 	created_at date, 
 	updated_at date,
 	
-	UNIQUE(project_deliverable, schedule_type)
+	UNIQUE(project_deliverable_id, schedule_type)
 );

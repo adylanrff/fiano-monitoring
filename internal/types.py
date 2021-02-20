@@ -5,12 +5,16 @@ from queue import Queue
 from typing import Literal, List
 from service.notion import notion_service
 from internal.utils import ProjectCreationWorker, ProjectDeliverableReaderWorker
+from internal.utils import add_new_multi_select_value
 
 # Types
+
+
 class ProjectDeliverable:
-    def __init__(self, project: str, section: str, item:str, subitem:str, info:str, quantity:int, price:int, unit:str):
+    def __init__(self, project: str, section: str, item: str, subitem: str, info: str, quantity: int, price: int, unit: str, workers: List[str], schedules: List[object]):
         name = '-'.join([project, section, item, subitem])
-        self.uuid = project + "-" + str(hashlib.sha256(name.encode('utf-8')).hexdigest())[:5]
+        self.uuid = project + "-" + \
+            str(hashlib.sha256(name.encode('utf-8')).hexdigest())[:5]
         self.section = section
         self.item = item
         self.subitem = subitem
@@ -20,6 +24,8 @@ class ProjectDeliverable:
         self.total_price = self.quantity * self.price
         self.status = "Gambar Kerja"
         self.unit = unit
+        self.workers = workers
+        self.schedules = schedules
 
     @classmethod
     def build_from_json(cls, data):
@@ -38,15 +44,16 @@ class ProjectDeliverable:
         status = row.status
         unit = row.unit
 
-        deliverable = cls(project, section, item, subitem, info, quantity, price, unit)
+        deliverable = cls(project, section, item, subitem,
+                          info, quantity, price, unit)
         deliverable.uuid = uuid
         deliverable.status = status
         return deliverable
-    
+
     def get_or_create_collection_from_project(self, deliverables, deliverables_collection, projectId):
         deliverables_collection = notion_service.get_deliverables_block().collection
         deliverable = deliverables.get(self.uuid)
-        
+
         if deliverable is None:
             deliverable_row = deliverables_collection.add_row()
             deliverable_row.uuid = self.uuid
@@ -58,7 +65,41 @@ class ProjectDeliverable:
             deliverable_row.harga = self.price
             deliverable_row.status = self.status
             deliverable_row.unit = self.unit
-            deliverable = deliverable_row
+
+            pekerja = []
+            for worker_name in self.workers:
+                add_new_multi_select_value(
+                    deliverables_collection, "Pekerja", worker_name)
+                worker = ProjectWorker.get_or_create_worker_collection(
+                    worker_name)
+                pekerja.append(worker_name)
+            deliverable_row.pekerja = pekerja
+
+            for schedule in self.schedules:
+                sd = schedule.get('start_date')
+                ed = schedule.get('end_date')
+                start_date = datetime.strptime(schedule.get('start_date'), "%Y-%m-%dT%H:%M:%S.%fZ") if sd is not None else None
+                end_date = datetime.strptime(schedule.get('end_date'), "%Y-%m-%dT%H:%M:%S.%fZ") if ed is not None else None
+
+                date = notion_service.create_date(
+                    start=start_date, end=end_date)
+                schedule_type = schedule.get('schedule_type', '').lower()
+                if schedule_type == 'gambar kerja':
+                    deliverable_row.jadwal_gambar_kerja = date
+                elif schedule_type == 'belanja':
+                    deliverable_row.jadwal_belanja = date
+                elif schedule_type == 'sipil':
+                    deliverable_row.jadwal_sipil = date
+                elif schedule_type == 'produksi':
+                    deliverable_row.jadwal_sipil = date
+                elif schedule_type == 'delivery':
+                    deliverable_row.jadwal_delivery = date
+                elif schedule_type == 'setting':
+                    deliverable_row.jadwal_setting = date
+                elif schedule_type == 'finishing':
+                    deliverable_row.jadwal_finishing = date
+
+            deliverable = deliverable_row                
 
         return deliverable
 

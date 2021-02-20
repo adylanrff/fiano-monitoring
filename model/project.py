@@ -52,21 +52,21 @@ class Worker(BaseModel):
 
 class ProjectDeliverableWorker(BaseModel):
     worker = ForeignKeyField(Worker)
-    project_deliverable = ForeignKeyField(ProjectDeliverable)
-    created_at = IntegerField()
-    updated_at = IntegerField()
+    project_deliverable_id = ForeignKeyField(ProjectDeliverable)
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
 
     class Meta:
         table_name = 'project_deliverable_worker_tab'
 
 
 class ProjectDeliverableSchedule(BaseModel):
-    project_deliverable = ForeignKeyField(ProjectDeliverable)
+    project_deliverable_id = ForeignKeyField(ProjectDeliverable)
     schedule_type = CharField()
-    start_time = IntegerField()
-    end_time = IntegerField()
-    created_at = IntegerField()
-    updated_at = IntegerField()
+    start_date = DateTimeField()
+    end_date = DateTimeField()
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
 
     class Meta:
         table_name = 'project_deliverable_schedule_tab'

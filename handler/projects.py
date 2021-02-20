@@ -22,7 +22,7 @@ def add_project_handler(request):
         project_name = data.get('nama')
         # Get workers
         pekerja_names = data.get('pekerja')
-        workers = [types.ProjectWorker(name) for name in pekerja_names]
+        workers_obj = [types.ProjectWorker(name) for name in pekerja_names]
         # get dates
         start_date = datetime.strptime(
             data.get('start_date'), "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -41,18 +41,22 @@ def add_project_handler(request):
             quantity = deliverable.get('quantity')
             info = deliverable.get('info')
             unit = deliverable.get('unit')
+            workers = deliverable.get('workers', [])
+            schedules = deliverable.get('schedules', [])
+
             new_deliverable = types.ProjectDeliverable(
-                project_name, section, item, subitem, info, quantity, price, unit)
+                project_name, section, item, subitem, info, quantity, price, unit, workers, schedules)
             deliverables.append(new_deliverable)
 
         # enqueue object
         project = fiano.Project(project_name, deliverables=deliverables,
-                                workers=workers, start_date=start_date, end_date=end_date)
-
-        repository.insert_to_db(project, deliverables, workers)
+                                workers=workers_obj, start_date=start_date, end_date=end_date)
 
         job = worker_queue.enqueue(
             fiano.insert_project, project, retry=Retry(3))
+        
+        db_job = worker_queue.enqueue(
+            repository.insert_to_db, project, deliverables, workers)
 
         return "Success enqueuing job for project {} ".format(project_name)
 

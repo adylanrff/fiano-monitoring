@@ -18,6 +18,8 @@ services:
       - ../db:/docker-entrypoint-initdb.d/
     env_file: 
       - ../.env
+    ports:
+      - "5432:5432"
     
   fiano_monitoring:
     restart: always
@@ -40,13 +42,17 @@ services:
     env_file: 
       - ../.env
   
-  metabase:
+  grafana:
     restart: always
-    image: metabase/metabase
+    image: grafana/grafana
     depends_on:
       - postgres
     ports: 
       - "3000:3000"
+    volumes: 
+      - grafana-storage:/var/lib/grafana
     env_file: 
       - ../.env
-
+volumes:
+  grafana-storage:
+    external: true

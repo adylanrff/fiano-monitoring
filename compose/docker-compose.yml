@@ -63,3 +63,14 @@ services:
       - "traefik.http.routers.fiano_monitoring.tls=true"
     env_file: 
       - ../.env
+
+  fiano_metabase:
+    restart: always
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fiano_metabase.rule=Host(`metabase.fiano-monitoring.adylanrff.com`)"
+      - "traefik.http.routers.fiano_metabase.entrypoints=websecure"
+      - "traefik.http.routers.fiano_metabase.tls.certresolver=myresolver"
+      - "traefik.http.routers.fiano_metabase.tls=true"

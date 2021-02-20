@@ -1,51 +1,66 @@
-CREATE TABLE IF NOT EXISTS project_tab (
-    id SERIAL PRIMARY KEY, 
-    project_name varchar(64),
-    project_status varchar(32),
-    timeline_start_date int,
-    timeline_end_date int,
-    real_timeline_start_date int,
-    real_timeline_end_date int,
-    created_at int,
-    updated_at int
+drop table if exists project_deliverable_schedule_tab;
+drop table if exists project_deliverable_worker_tab;
+drop table if exists project_deliverable_tab;
+drop table if exists worker_tab;
+drop table if exists project_tab;
+
+create table if not exists project_tab (
+	id SERIAL primary key,
+	project_name varchar(256),
+	project_status varchar(256),
+	timeline_start_date date,
+	timeline_end_date date,
+	actual_start_date date,
+	actual_end_date date,
+	created_at date,
+	updated_at date,
+	
+	UNIQUE(project_name)
 );
 
-CREATE TABLE IF NOT EXISTS project_deliverable_tab (
-    id SERIAL PRIMARY KEY,
-    project_id int REFERENCES project_tab(id),
-    section varchar(32),
-    item varchar(32),
-    subitem varchar(32),
-    deliverable_status varchar(32),
-    price int,
-    quantity int,
-    unit varchar(32),
-    created_at int,
-    updated_at int
+create table if not exists project_deliverable_tab (
+	id SERIAL primary key,
+	project_id int references project_tab(id) not NULL,
+	section varchar(64),
+	item varchar(64),
+	subitem varchar(64),
+	deliverable_status varchar(32),
+	price int,
+	quantity int,
+	unit varchar, 
+	info varchar,
+	created_at date, 
+	updated_at date
 );
 
-CREATE TABLE IF NOT EXISTS worker_tab (
-    id SERIAL PRIMARY KEY,
-    worker_name varchar(64),
-    worker_type varchar(32),
-    created_at int, 
-    updated_at int,
-    salary int
+create table if not exists worker_tab (
+	id SERIAL primary key,
+	worker_name varchar(32), 
+	worker_type varchar(32),
+	created_at date, 
+	updated_at date, 
+	salary int,
+	
+	UNIQUE(worker_name)
 );
 
-CREATE TABLE IF NOT EXISTS project_deliverable_worker_tab (
-    id SERIAL PRIMARY KEY,
-    project_deliverable_id int REFERENCES project_deliverable_tab(id),
-    worker_id int REFERENCES workers_tab(id),
-    created_at int,
-    updated_at int
+create table if not exists project_deliverable_worker_tab (
+	id SERIAL primary key,
+	project_deliverable_id int references project_deliverable_tab(id) not null,
+	worker_id int references worker_tab(id) not null,
+	created_at date, 
+	updated_at date
 );
 
-CREATE TABLE IF NOT EXISTS project_deliverable_schedule_tab (
-    project_deliverable_id int REFERENCES project_deliverable_tab(id),
-    schedule_type varchar(32),
-    start_time int,
-    end_time int,
 
-    UNIQUE(project_deliverable_id, schedule_type)
-)
+create table if not exists project_deliverable_schedule_tab (
+	id SERIAL primary key,
+	project_deliverable int references project_deliverable_tab(id) not NULL,
+	schedule_type varchar(32),
+	start_date date, 
+	end_date date,
+	created_at date, 
+	updated_at date,
+	
+	UNIQUE(project_deliverable, schedule_type)
+);

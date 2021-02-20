@@ -15,7 +15,7 @@ services:
     image: postgres:alpine
     volumes:
       - /lib/postgres/postgres-data:/var/lib/postgresql/data
-      - ../db:/docker-entrypoint-initdb.d/  
+      - ../db:/docker-entrypoint-initdb.d/
     env_file: 
       - ../.env
     
@@ -40,3 +40,13 @@ services:
     env_file: 
       - ../.env
   
+  metabase:
+    restart: always
+    image: metabase/metabase
+    depends_on:
+      - postgres
+    ports: 
+      - "3000:3000"
+    env_file: 
+      - ../.env
+

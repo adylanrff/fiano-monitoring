@@ -66,6 +66,7 @@ services:
 
   fiano_metabase:
     restart: always
+    image: metabase/metabase
     depends_on:
       - postgres
     labels:
@@ -74,3 +75,5 @@ services:
       - "traefik.http.routers.fiano_metabase.entrypoints=websecure"
       - "traefik.http.routers.fiano_metabase.tls.certresolver=myresolver"
       - "traefik.http.routers.fiano_metabase.tls=true"
+    env_file: 
+      - ../.env

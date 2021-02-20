@@ -73,7 +73,7 @@ services:
       - grafana-storage:/var/lib/grafana
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fiano_metabase.rule=Host(`metabase.fiano-monitoring.adylanrff.com`)"
+      - "traefik.http.routers.fiano_metabase.rule=Host(`grafana.fiano-monitoring.adylanrff.com`)"
       - "traefik.http.routers.fiano_metabase.entrypoints=websecure"
       - "traefik.http.routers.fiano_metabase.tls.certresolver=myresolver"
       - "traefik.http.routers.fiano_metabase.tls=true"

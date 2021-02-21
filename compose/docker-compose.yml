@@ -78,6 +78,7 @@ services:
       - "traefik.http.routers.fiano_metabase.entrypoints=websecure"
       - "traefik.http.routers.fiano_metabase.tls.certresolver=myresolver"
       - "traefik.http.routers.fiano_metabase.tls=true"
+      - "traefik.frontend.passHostHeader: 'true'"
     env_file: 
       - ../.env
 volumes:

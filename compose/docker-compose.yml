@@ -71,6 +71,7 @@ services:
       - postgres
     volumes: 
       - grafana-storage:/var/lib/grafana
+      - ../grafana/grafana.ini:/etc/grafana/grafana.ini
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fiano_metabase.rule=Host(`grafana.fiano-monitoring.adylanrff.com`)"

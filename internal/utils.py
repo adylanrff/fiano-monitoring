@@ -87,7 +87,8 @@ class ProjectDeliverableReaderWorker(Thread):
                         from internal.types import ProjectDeliverable
                         new_deliverable = ProjectDeliverable.build_from_collection(deliverable).__dict__
                         all_deliverables.append(new_deliverable)
-                    except:
+                    except Exception as e:
+                        print(e)
                         continue
                     else:
                         break

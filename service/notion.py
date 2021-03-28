@@ -2,7 +2,7 @@ import config
 from typing import Optional
 from notion.client import NotionClient
 from notion.collection import NotionDate
-
+from monkeypatch import notion_patch
 
 class NotionService:
     def __init__(self, token):

@@ -43,9 +43,40 @@ class ProjectDeliverable:
         price = row.harga
         status = row.status
         unit = row.unit
+        workers = row.pekerja
+
+        schedules = []
+
+        jadwal_gambar_kerja = row.jadwal_gambar_kerja 
+        aktual_gambar_kerja = row.aktual_gambar_kerja 
+        schedules.append([jadwal_gambar_kerja, aktual_gambar_kerja])
+
+        jadwal_belanja = row.jadwal_belanja 
+        aktual_belanja = row.aktual_belanja 
+        schedules.append([jadwal_belanja, aktual_belanja])
+
+        jadwal_sipil  = row.jadwal_sipil 
+        aktual_sipil  = row.aktual_sipil 
+        schedules.append([jadwal_sipil, aktual_sipil])
+        
+        jadwal_produksi = row.jadwal_produksi 
+        aktual_produksi = row.aktual_produksi 
+        schedules.append([jadwal_produksi, aktual_produksi])
+
+        jadwal_delivery = row.jadwal_delivery 
+        aktual_delivery = row.aktual_delivery 
+        schedules.append([jadwal_delivery, aktual_delivery])
+        
+        jadwal_setting = row.jadwal_setting 
+        aktual_setting = row.aktual_setting 
+        schedules.append([jadwal_setting, aktual_setting])
+
+        jadwal_finishing = row.jadwal_finishing
+        aktual_finishing = row.aktual_finishing
+        schedules.append([jadwal_finishing, aktual_finishing])
 
         deliverable = cls(project, section, item, subitem,
-                          info, quantity, price, unit)
+                          info, quantity, price, unit, workers=workers, schedules=schedules)
         deliverable.uuid = uuid
         deliverable.status = status
         return deliverable
@@ -91,7 +122,7 @@ class ProjectDeliverable:
                 elif schedule_type == 'sipil':
                     deliverable_row.jadwal_sipil = date
                 elif schedule_type == 'produksi':
-                    deliverable_row.jadwal_sipil = date
+                    deliverable_row.jadwal_produksi = date
                 elif schedule_type == 'delivery':
                     deliverable_row.jadwal_delivery = date
                 elif schedule_type == 'setting':
@@ -191,7 +222,6 @@ class Project:
         # generate deliverables
         collection_deliverables = row.deliverables
         deliverables = []
-
         queue = Queue()
         for x in range(8):
             worker = ProjectDeliverableReaderWorker(queue)
@@ -199,7 +229,7 @@ class Project:
             worker.start()
 
         for deliverable in collection_deliverables:
-             queue.put((deliverables, deliverable))
+            queue.put((deliverables, deliverable))
 
         queue.join()
 

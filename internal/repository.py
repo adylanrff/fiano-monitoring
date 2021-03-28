@@ -59,7 +59,7 @@ def insert_to_db(project, deliverables, workers):
 
             for s in schedules:
                 db_schedule = ProjectDeliverableSchedule(
-                    project_deliverable_id=db_deliverable.id,
+                    project_deliverable=db_deliverable.id,
                     schedule_type=s.get('schedule_type'),   
                     start_time=s.get('start_time'),   
                     end_time=s.get('end_time'),   

@@ -9,7 +9,7 @@ def call_load_page_chunk(self, page_id):
 
     data = {
         "pageId": page_id,
-        "limit": 100,
+        "limit": 25,
         "cursor": {"stack": []},
         "chunkNumber": 0,
         "verticalColumns": False,
@@ -47,7 +47,7 @@ def call_query_collection(
         "collectionId": collection_id,
         "collectionViewId": collection_view_id,
         "loader": {
-            "limit": 1000000,
+            "limit": 25,
             "loadContentCover": True,
             "searchQuery": search,
             "userLocale": "en",
@@ -72,7 +72,7 @@ def search_pages_with_parent(self, parent_id, search=""):
     data = {
         "query": search,
         "parentId": parent_id,
-        "limit": 100,
+        "limit": 25,
         "spaceId": self.current_space.id,
     }
     response = self.post("searchPagesWithParent", data).json()

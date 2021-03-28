@@ -4,10 +4,11 @@ from internal import constants
 from service.notion import notion_service
 from internal.types import Project
 from internal.utils import add_new_multi_select_value
-
+from monkeypatch import notion_patch
 
 # methods
 def insert_project(project: Project):    
+    notion_patch.monkey_patch()
     existing_project = notion_service.get_projects().get(project.name)
     project_collection = notion_service.get_project_block().collection
 
